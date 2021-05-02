@@ -1,0 +1,14 @@
+.light {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+
+  .light__label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  > * {
+    margin-right: $grid-step;
+  }
+}

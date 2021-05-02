@@ -1,0 +1,52 @@
+.fan {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: #eee;
+  margin: $grid-step / 2;
+  padding: $grid-step / 2;
+
+  .fan__label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .fan__status {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    margin: $grid-step;
+
+    .fan__status__control {
+      font-weight: bold;
+      color: red;
+
+      &.fan__status__control--auto {
+        color: blue;
+      }
+    }
+
+    .fan__status__value {
+      margin-left: $grid-step / 2;
+      font-weight: bold;
+
+      &.fan__status__value--min {
+        color: lime;
+      }
+
+      &.fan__status__value--min {
+        color: green;
+      }
+
+      &.fan__status__value--off {
+        color: red;
+      }
+    }
+  }
+
+  .fan__controls {
+    > * {
+      margin-right: $grid-step;
+    }
+  }
+}

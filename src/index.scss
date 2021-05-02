@@ -1,0 +1,78 @@
+$grid-step: 6px;
+
+* {
+  font-size: 12px;
+}
+
+html {
+  overflow: hidden;
+}
+
+* {
+  min-height: 0;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  background: #ddd;
+  padding: $grid-step;
+
+  > .header__label {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  > .header__refresh {
+    color: blue;
+    text-decoration: underline;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  > .header__websocket-connection {
+    width: 14px;
+    height: 14px;
+    border: 2px solid gray;
+    border-radius: 20px;
+
+    &.header__websocket-connection--true {
+      background: lime;
+    }
+
+    &.header__websocket-connection--false {
+      background: red;
+    }
+  }
+}
+
+#root {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+button {
+  background: white;
+  border: 1px solid gray;
+  border-radius: 3px;
+  font-size: 14px;
+
+  &.active {
+    font-weight: bold;
+    background: lime;
+  }
+}
+
+
+
+@import './containers/index.scss';
+@import './components/index.scss';

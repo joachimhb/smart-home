@@ -1,0 +1,197 @@
+'use strict';
+
+const http = require('http');
+
+const _          = require('lodash');
+// const fs         = require('fs-extra');
+const log4js     = require('log4js');
+const express    = require('express');
+const bodyParser = require('body-parser');
+const morgan     = require('morgan');
+const WebSocket  = require('ws');
+
+const registerRoutes = require('./lib/registerRoutes');
+const routes         = require('./routes');
+
+const {
+  MqttClient,
+  topics,
+} = require('@joachimhb/smart-home-shared');
+
+const {
+  shutterMovement,
+  shutterStatus,
+} = topics;
+
+const wsPort    = 3001;
+const port      = 3000;
+
+const logger = log4js.getLogger();
+
+logger.level = 'info';
+logger.level = 'debug';
+
+const dockerConfigPath = '../config/arbeitszimmer/smart-home/config';
+const localConfigPath = '../smart-home-setup/arbeitszimmer/config/smart-home/config';
+
+let config = null;
+
+try {
+  config = require(dockerConfigPath);
+  logger.info(`Using config [${dockerConfigPath}]`);
+} catch(err) {
+  logger.trace('Config fallback', err);
+  config = require(localConfigPath);
+  logger.info(`Using config [${localConfigPath}]`);
+}
+
+const app = express();
+
+app.use(bodyParser.json());
+app.set('json spaces', 2);
+app.use(express.urlencoded({
+  extended: true,
+}));
+
+app.use(express.static('dist'));
+
+app.use(morgan('dev'));
+
+const status = {};
+
+const wss = new WebSocket.Server({port: wsPort});
+
+const clientsBroadcast = function(data) {
+  for(const client of wss.clients) {
+    if(client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  }
+};
+
+const clientConnected = client => {
+  for(const id of Object.keys(status)) {
+    const data = {
+      type: 'room_status',
+      id,
+      data: status[id],
+    };
+
+    client.send(JSON.stringify(data));
+  }
+};
+
+(async function() {
+  const mqttClient = new MqttClient({
+    url: config.globals.mqttBroker,
+    logger,
+  });
+
+  const handleMqttMessage = async(topic, data) => {
+    logger.debug('handleMqttMessage', topic, data);
+
+    const [
+      area,
+      areaId,
+      element,
+      elementId,
+      subArea,
+    ] = topic.split('/');
+
+    let changeDetected = false;
+
+    if(area === 'room') {
+      const current = _.get(status, [
+        areaId,
+        element,
+        elementId,
+        subArea,
+      ].filter(Boolean), {value: 'unknown', since: 'unknown'});
+
+      _.set(status, [
+        areaId,
+        element,
+        elementId,
+        subArea,
+      ].filter(Boolean), data);
+
+      if(current.value !== data.value) {
+        logger.debug(topic, current, data);
+
+        changeDetected = true;
+      }
+    }
+
+    if(changeDetected) {
+      const updated = {
+        type: 'room_status',
+        id: areaId,
+        data: status[areaId],
+      };
+
+      clientsBroadcast(updated);
+    }
+  };
+
+  await mqttClient.init(handleMqttMessage);
+
+  registerRoutes(app, {mqttClient, logger, config}, routes);
+
+  // eslint-disable-next-line no-unused-vars
+  app.use((err, req, res, next) => {
+    logger.error(err.message);
+  });
+
+  const server = http.createServer(app);
+
+  server.on('error', err => {
+    logger.error('Server error', err);
+  });
+
+  server.listen(port);
+
+  logger.info(`Server started at ${port}`);
+
+  wss.on('connection', client => {
+    logger.debug('ws [connection]');
+
+    client.isAlive = true;
+
+    client.on('pong', () => {
+      logger.debug('ws [pong]');
+      client.isAlive = true;
+    });
+
+    client.on('message', data => {
+      logger.debug('ws [message]', data);
+    });
+
+    logger.debug('ws [open]');
+
+    clientConnected(client);
+  });
+
+  const interval = setInterval(() => {
+    for(const client of wss.clients) {
+      if(client.isAlive === false) {
+        return client.terminate();
+      }
+
+      client.isAlive = false;
+      client.ping(_.noop);
+    }
+  }, 30000);
+
+  wss.on('close', () => {
+    clearInterval(interval);
+  });
+
+  for(const room of config.rooms) {
+    if(room.shutters) {
+      for(const shutter of room.shutters) {
+        await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
+        await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
+      }
+    }
+  }
+})();

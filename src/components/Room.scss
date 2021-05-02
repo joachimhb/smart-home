@@ -1,0 +1,48 @@
+.room {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 170px;
+  // max-width: 400px;
+  min-height: 200px;
+  padding: $grid-step / 2;
+  margin: $grid-step / 2;
+  border: 1px solid gray;
+
+  .room__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex: 0 0 auto;
+
+    .room__header__label {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .room__general-status__line {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: row;
+      > * {
+        margin: $grid-step / 2;
+      }
+    }
+  }
+
+  .room__status {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    .room__status__windows,
+    .room__status__shutters,
+    .room__status__fans {
+      display: flex;
+      flex: 1;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}
