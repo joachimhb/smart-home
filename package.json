@@ -1,7 +1,6 @@
 {
   "name": "smart-home-control",
   "version": "0.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "webpack serve --disable-host-check --config webpack.config.development.js",
@@ -60,5 +59,17 @@
     "webpack": "^5.36.2",
     "webpack-cli": "4.6.0",
     "webpack-dev-server": "^3.11.2"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joachimhb/smart-home.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joachimhb/smart-home/issues"
+  },
+  "homepage": "https://github.com/joachimhb/smart-home#readme",
+  "description": ""
 }
