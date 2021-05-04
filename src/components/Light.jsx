@@ -11,7 +11,7 @@ const Light = function(props) {
       <div className='light__label'>{config.label}</div>
       <div className='light__value' title={`Seit: ${status.since || 'unbekannt'}`}>{status.value === 'on' ? 'an' : 'aus'}</div>
       {detailed ? <div className='light__since'>seit {humanDate(status.since) || 'unbekannt'}</div> : null}
-      {detailed ? <div className='light__switch' onClick={() => props.onChange(status.value === 'on' ? 'off' : 'on')}>SWITCH</div> : null}
+      {/* {detailed ? <div className='light__switch' onClick={() => props.onChange(status.value === 'on' ? 'off' : 'on')}>SWITCH</div> : null} */}
     </div>
   );
 };

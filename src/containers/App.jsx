@@ -6,7 +6,7 @@ import WebsocketConnectionContext from '../contexts/WebsocketConnection.js';
 
 import Overview from './Overview.jsx';
 
-const version = '0.0.0';
+const version = '0.1.0';
 
 const App = function(props) {
   const {smartHome} = props;
