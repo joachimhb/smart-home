@@ -21,6 +21,20 @@ const {
 const {
   shutterMovement,
   shutterStatus,
+  // windowOpenStatus,
+
+  fanControl,
+  fanSpeed,
+  fanTrailingTime,
+  fanMinRunTime,
+  fanLightTimeout,
+  fanMinHumidityThreshold,
+  fanMaxHumidityThreshold,
+
+  roomTemperature,
+  roomHumidity,
+
+  lightStatus,
 } = topics;
 
 const wsPort    = 3001;
@@ -31,7 +45,7 @@ const logger = log4js.getLogger();
 logger.level = 'info';
 logger.level = 'debug';
 
-const dockerConfigPath = '../config/arbeitszimmer/smart-home/config';
+const dockerConfigPath = '../config/smart-home/config';
 const localConfigPath = '../smart-home-setup/arbeitszimmer/config/smart-home/config';
 
 let config = null;
@@ -83,12 +97,12 @@ const clientConnected = client => {
 
 (async function() {
   const mqttClient = new MqttClient({
-    url: config.globals.mqttBroker,
+    url: config.mqttBroker,
     logger,
   });
 
   const handleMqttMessage = async(topic, data) => {
-    logger.debug('handleMqttMessage', topic, data);
+    logger.trace('handleMqttMessage', topic, data);
 
     const [
       area,
@@ -101,19 +115,16 @@ const clientConnected = client => {
     let changeDetected = false;
 
     if(area === 'room') {
-      const current = _.get(status, [
+      const finalPath = [
         areaId,
         element,
         elementId,
         subArea,
-      ].filter(Boolean), {value: 'unknown', since: 'unknown'});
+      ].filter(Boolean);
 
-      _.set(status, [
-        areaId,
-        element,
-        elementId,
-        subArea,
-      ].filter(Boolean), data);
+      const current = _.get(status, finalPath, {value: 'unknown'});
+
+      _.set(status, finalPath, data);
 
       if(current.value !== data.value) {
         logger.debug(topic, current, data);
@@ -187,11 +198,26 @@ const clientConnected = client => {
   });
 
   for(const room of config.rooms) {
-    if(room.shutters) {
-      for(const shutter of room.shutters) {
-        await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
-        await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
-      }
+    for(const shutter of room.shutters || []) {
+      await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
+      await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
     }
+
+    for(const fan of room.fans || []) {
+      await mqttClient.subscribe(fanControl(room.id, fan.id));
+      await mqttClient.subscribe(fanSpeed(room.id, fan.id));
+      await mqttClient.subscribe(fanTrailingTime(room.id, fan.id));
+      await mqttClient.subscribe(fanMinRunTime(room.id, fan.id));
+      await mqttClient.subscribe(fanMinHumidityThreshold(room.id, fan.id));
+      await mqttClient.subscribe(fanMaxHumidityThreshold(room.id, fan.id));
+      await mqttClient.subscribe(fanLightTimeout(room.id, fan.id));
+    }
+
+    for(const light of room.lights || []) {
+      await mqttClient.subscribe(lightStatus(room.id, light.id));
+    }
+
+    await mqttClient.subscribe(roomHumidity(room.id));
+    await mqttClient.subscribe(roomTemperature(room.id));
   }
 })();

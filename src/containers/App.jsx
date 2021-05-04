@@ -1,10 +1,7 @@
-import React, {
-  useEffect,
-} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 
 import {Route, Switch} from 'react-router';
-import {getRooms} from '../actions/rooms.js';
 import WebsocketConnectionContext from '../contexts/WebsocketConnection.js';
 
 import Overview from './Overview.jsx';
@@ -12,15 +9,7 @@ import Overview from './Overview.jsx';
 const version = '0.0.0';
 
 const App = function(props) {
-  const {dispatch, rooms, smartHome} = props;
-
-  useEffect(() => {
-    dispatch(getRooms());
-  });
-
-  if(!rooms.data || rooms.loading) {
-    return <div>Loading...</div>;
-  }
+  const {smartHome} = props;
 
   return (
     <WebsocketConnectionContext.Provider value={smartHome.websocketConnection}>
@@ -40,7 +29,6 @@ const App = function(props) {
 
 const mapStateToProps = state => ({
   smartHome: state.smartHome,
-  rooms: state.rooms,
 });
 
 export default connect(mapStateToProps)(App);

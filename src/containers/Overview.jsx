@@ -1,10 +1,25 @@
-import React from 'react';
+import React, {
+  useEffect,
+} from 'react';
 import {connect} from 'react-redux';
 
+import {getRooms} from '../actions/rooms.js';
 import Room from '../components/Room.jsx';
 
 const Overview = function(props) {
-  const {roomStatus, rooms} = props;
+  const {dispatch, rooms, roomStatus} = props;
+
+  useEffect(() => {
+    dispatch(getRooms());
+  });
+
+  if(rooms.error) {
+    return <div className='ui-error'>{rooms.error.message}</div>;
+  }
+
+  if(rooms.loading || !rooms.data) {
+    return <div className='spinner'>Loading rooms...</div>;
+  }
 
   const renderRoom = room => {
     const status = roomStatus[room.id] || {};

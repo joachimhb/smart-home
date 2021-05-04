@@ -29,7 +29,7 @@ const connectWebsocket = function({store}) {
         store.dispatch(updateRoomStatus(id, data));
       }
 
-      console.log(event);
+      // console.log(event);
       // console.log(JSON.stringify({type, id, data}, null, 2));
     } catch(err) {
       console.warn('Websocket', err);

@@ -8,7 +8,15 @@ import Light from './Light.jsx';
 import Fan from './Fan.jsx';
 import Window from './Window.jsx';
 
-import {updateShutterMovement} from '../lib/controls';
+import humanDate from '../lib/humanDate';
+
+import {
+  updateShutterMovement,
+  updateFanControl,
+  updateFanSpeed,
+  updateFanConfigValue,
+  updateLightStatus,
+} from '../lib/controls';
 
 const Room = function(props) {
   const {config = {}, status = {}, detailed} = props;
@@ -29,21 +37,18 @@ const Room = function(props) {
     const {value: temperatureValue, since: temperatureSince} = temperature || {};
     const {value: humidityValue, since: humiditySince} = humidity || {};
 
-    const lightElements = [];
-
-    for(const light of config.lights || []) {
-      lightElements.push(<Light key={light.id} config={light} status={_.get(status, ['lights', light.id])} />);
-    }
+    const finalTemperature = temperatureValue ? temperatureValue.toFixed(1) : '-';
+    const finalHumidity = humidityValue ? humidityValue.toFixed(1) : '-';
 
     return (
       <div className='room__general-status'>
-        <div className='room__general-status__line'>
-          <div className='room__general-status__temperature' title={`Seit ${temperatureSince}`}>{temperatureValue || '-'} C</div>
-          <div>/</div>
-          <div className='room__general-status__humidity' title={`Seit ${humiditySince}`}>{humidityValue || '-'} %</div>
+        <div className='room__general-status__temperature' title={`Seit: ${temperatureSince || 'unbekannt'}`}>
+          <div className='room__general-status__temperature__value'>{finalTemperature || '-'} C</div>
+          {_detailed ? <div className='room__general-status__temperature__since'>seit {humanDate(temperatureSince) || 'unbekannt'}</div> : null}
         </div>
-        <div className='room__general-status__line'>
-          {lightElements}
+        <div className='room__general-status__humidity' title={`Seit: ${humiditySince || 'unbekannt'}`}>
+          <div className='room__general-status__humidity__value'>{finalHumidity || '-'} %</div>
+          {_detailed ? <div className='room__general-status__humidity__since'>seit {humanDate(humiditySince) || 'unbekannt'}</div> : null}
         </div>
       </div>
     );
@@ -57,8 +62,18 @@ const Room = function(props) {
       fanElements.push(
         <Fan
           key={fan.id}
+          detailed={_detailed}
           config={fan}
           status={_.get(status, ['fans', fan.id])}
+          onControlChange={value => {
+            updateFanControl(config.id, fan.id, value);
+          }}
+          onSpeedChange={value => {
+            updateFanSpeed(config.id, fan.id, value);
+          }}
+          onConfigChange={(key, value) => {
+            updateFanConfigValue(config.id, fan.id, key, value);
+          }}
         />
       );
     }
@@ -72,6 +87,7 @@ const Room = function(props) {
       windowElements.push(
         <Window
           key={id}
+          detailed={_detailed}
           shutterConfig={shutterConfig}
           windowConfig={windowConfig}
           windowStatus={_.get(status, ['windows', id])}
@@ -83,8 +99,27 @@ const Room = function(props) {
       );
     }
 
+    const lightElements = [];
+
+    for(const light of config.lights || []) {
+      lightElements.push(
+        <Light
+          key={light.id}
+          detailed={_detailed}
+          config={light}
+          status={_.get(status, ['lights', light.id, 'status'])}
+          onChange={value => {
+            updateLightStatus(config.id, light.id, value);
+          }}
+        />
+      );
+    }
+
     return (
       <div className='room__status'>
+        <div className='room__status__lights'>
+          {lightElements}
+        </div>
         <div className='room__status__fans'>
           {fanElements}
         </div>
@@ -100,7 +135,7 @@ const Room = function(props) {
   return (
     <div className={classNames(classes)}>
       <div className='room__header'>
-        <div className='room__header__label'>{config.label}</div>
+        <div className='room__header__label' onClick={() => setDetailed(!_detailed)}>{config.label}</div>
         {renderGeneralStatus()}
       </div>
       {renderStatus()}

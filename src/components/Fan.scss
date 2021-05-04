@@ -2,47 +2,98 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  background: #eee;
+  // background: #eee;
   margin: $grid-step / 2;
   padding: $grid-step / 2;
+  border: 1px solid #bbb;
+  border-radius: 3px;
 
-  .fan__label {
-    font-weight: bold;
-    font-size: 14px;
-  }
-
-  .fan__status {
+  .fan__header {
     display: flex;
     flex: 0 0 auto;
     flex-direction: row;
-    margin: $grid-step;
+    justify-content: space-between;
+    align-items: center;
+    padding: $grid-step / 2;
 
-    .fan__status__control {
+    .fan__header__label {
       font-weight: bold;
-      color: red;
-
-      &.fan__status__control--auto {
-        color: blue;
-      }
+      font-size: 14px;
     }
 
-    .fan__status__value {
-      margin-left: $grid-step / 2;
-      font-weight: bold;
+    .fan__header__status {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: row;
+      margin: $grid-step;
 
-      &.fan__status__value--min {
-        color: lime;
-      }
-
-      &.fan__status__value--min {
-        color: green;
-      }
-
-      &.fan__status__value--off {
+      .fan__header__status__control {
+        font-weight: bold;
         color: red;
+
+        &.fan__header__status__control--auto {
+          color: blue;
+        }
+      }
+
+      .fan__header__status__value {
+        margin-left: $grid-step / 2;
+        font-weight: bold;
+
+        &.fan__header__status__value--min {
+          color: lime;
+        }
+
+        &.fan__header__status__value--min {
+          color: green;
+        }
+
+        &.fan__header__status__value--off {
+          color: red;
+        }
       }
     }
   }
+
+  .fan__details {
+    padding: $grid-step / 2;
+
+    * {
+      font-size: 10px;
+    }
+
+    > * {
+      margin: $grid-step / 4;
+      margin-right: $grid-step / 2;
+    }
+
+    .fan__details__config {
+      .fan__details__config__row {
+        display: flex;
+        flex: 0 0 auto;;
+        flex-direction: row;
+        align-items: center;
+
+        > * {
+          margin: $grid-step / 4;
+          // margin-right: $grid-step / 2;
+        }
+
+        .fan__details__config__row__label {
+          width: 100px;
+        }
+        .fan__details__config__row__unit {
+          width: 20px;
+        }
+        input {
+          text-align: right;
+          width: 30px;
+        }
+      }
+    }
+  }
+
+
 
   .fan__controls {
     > * {

@@ -11,7 +11,7 @@
 
   .room__header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     flex: 0 0 auto;
@@ -21,12 +21,34 @@
       font-size: 16px;
     }
 
-    .room__general-status__line {
+    .room__general-status {
       display: flex;
       flex: 0 0 auto;
       flex-direction: row;
+
+      .room__general-status__humidity,
+      .room__general-status__temperature {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .room__general-status__humidity__since,
+      .room__general-status__temperature__since {
+        font-size: 10px;
+        font-style: italic;
+      }
+
       > * {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: row;
         margin: $grid-step / 2;
+
+        > * {
+          margin-right: $grid-step / 2;
+        }
       }
     }
   }
@@ -37,12 +59,35 @@
     flex-direction: column;
 
     .room__status__windows,
-    .room__status__shutters,
     .room__status__fans {
       display: flex;
       flex: 1;
       flex-direction: row;
       flex-wrap: wrap;
+    }
+
+    .room__status__lights {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+  }
+
+  &.room--detailed {
+    .room__header {
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .room__general-status {
+      flex-direction: column;
+    }
+
+    .room__status__lights {
+      flex-direction: column;
     }
   }
 }

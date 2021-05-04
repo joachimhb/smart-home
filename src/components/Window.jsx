@@ -9,13 +9,13 @@ import WebsocketConnectionContext from '../contexts/WebsocketConnection';
 const shutter = function(props) {
   const {windowConfig = {}, shutterConfig = {}, windowStatus = {}, shutterStatus = {}} = props;
 
-  const {value: windowValue, since: windowSince} = windowStatus.status || {};
-  const {value: statusValue, since: statusSince} = shutterStatus.status || {};
+  const {value: windowValue, since: windowSince}     = windowStatus.status || {};
+  const {value: statusValue, since: statusSince}     = shutterStatus.status || {};
   const {value: movementValue, since: movementSince} = shutterStatus.movement || {};
 
   const websocketConnected = useContext(WebsocketConnectionContext);
 
-  const onUpClick = () => props.onMovementChange('up');
+  const onUpClick   = () => props.onMovementChange('up');
   const onStopClick = () => props.onMovementChange('stop');
   const onDownClick = () => props.onMovementChange('down');
 
@@ -29,12 +29,12 @@ const shutter = function(props) {
     }
 
     return (
-      <div className='window__open-status' title={`Seit ${windowSince}`}>{windowValue ? 'offen' : 'geschlossen'}</div>
+      <div className='window__open-status' title={`Seit: ${windowSince}`}>{windowValue ? 'offen' : 'geschlossen'}</div>
     );
   };
 
   const buttonClasses = [
-    'window__shutter__controls__button'
+    'window__shutter__controls__button',
   ];
 
   if(!websocketConnected) {
@@ -56,7 +56,7 @@ const shutter = function(props) {
   const downButtonClasses = [
     ...buttonClasses,
     'window__shutter__controls__button--down',
-    movementValue === 'down' ? 'active' : ''
+    movementValue === 'down' ? 'active' : '',
   ];
 
   const renderShutter = () => {
@@ -66,10 +66,10 @@ const shutter = function(props) {
 
     return (
       <div className='window__shutter'>
-        <div className='window__shutter__status' title={`Seit ${statusSince}`}>
+        <div className='window__shutter__status' title={`Seit: ${statusSince}`}>
           <div className='window__shutter__status__value' style={{height: `${statusValue}%`}} />
         </div>
-        <div className='window__shutter__controls' title={`Seit ${movementSince}`}>
+        <div className='window__shutter__controls' title={`Seit: ${movementSince}`}>
           <button disabled={!websocketConnected} className={classNames(upButtonClasses)} onClick={onUpClick}>
             <div className='arrow'><span /></div>
           </button>

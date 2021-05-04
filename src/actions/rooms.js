@@ -9,8 +9,6 @@ export const ROOMS_CLEAR   = 'ROOMS_CLEAR';
 export const getRooms = () => async(dispatch, getStore) => {
   const store = getStore();
 
-  console.log(store);
-
   if(store.rooms) {
     if(store.rooms.loading || store.rooms.data || store.rooms.error) {
       return false;

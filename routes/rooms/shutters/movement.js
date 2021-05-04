@@ -6,7 +6,7 @@ const {
 
 const {shutterMovement} = topics;
 
-module.exports = async function update({mqttClient}) {
+module.exports = async function movement({mqttClient}) {
   return {
     method: 'put',
     path: '/rooms/:room/shutters/:shutter/movement',
