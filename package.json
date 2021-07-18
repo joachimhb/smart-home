@@ -1,6 +1,6 @@
 {
   "name": "smart-home-control",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "scripts": {
     "dev": "webpack serve --disable-host-check --config webpack.config.development.js",
