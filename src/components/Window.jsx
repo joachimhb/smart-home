@@ -5,11 +5,13 @@ import React, {
   useContext,
 } from 'react';
 import WebsocketConnectionContext from '../contexts/WebsocketConnection';
+import humanDate from '../lib/humanDate';
 
 const shutter = function(props) {
-  const {windowConfig = {}, shutterConfig = {}, windowStatus = {}, shutterStatus = {}} = props;
+  const {windowConfig = {}, shutterConfig = {}, windowStatus = {}, shutterStatus = {}, detailed} = props;
 
   const {value: windowValue, since: windowSince}     = windowStatus.status || {};
+  const {since: initSince}                           = shutterStatus.init || {};
   const {value: statusValue, since: statusSince}     = shutterStatus.status || {};
   const {value: movementValue, since: movementSince} = shutterStatus.movement || {};
 
@@ -86,9 +88,24 @@ const shutter = function(props) {
 
   const labels = _.uniq([windowConfig.label, shutterConfig.label]).filter(Boolean);
 
+  const renderDetails = () => {
+    if(!detailed) {
+      return null;
+    }
+
+    return [
+      <div key='label'>Control start</div>,
+      <div key='value' style={{
+        fontSize: '10px',
+        fontStyle: 'italic',
+      }}>{humanDate(initSince)}</div>,
+    ];
+  }
+
   return (
     <div className='window'>
       <div className='window__label'>{labels.join('/')}</div>
+      {renderDetails()}
       {renderOpenStatus()}
       {renderShutter()}
     </div>

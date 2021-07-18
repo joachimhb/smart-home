@@ -1,0 +1,29 @@
+.room.room--full {
+  .window {
+    min-width: 200px;
+    max-width: 200px;
+  
+    margin: $grid-step / 2;
+    padding: $grid-step / 2;
+  
+    .window__label {
+      font-size: 14px;
+    }
+  
+    .window__open-status {
+      font-size: 12px;
+    }
+
+    .window__shutter__status {
+      min-height: 160px;
+      max-height: 160px;
+      min-width: 100px;
+      max-width: 100px;
+    }
+
+    .window__shutter__controls__button {
+      width: 40px !important;
+      height: 50px !important;
+    }
+  }
+}

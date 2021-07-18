@@ -6,8 +6,10 @@ import {connect} from 'react-redux';
 import {getRooms} from '../actions/rooms.js';
 import Room from '../components/Room.jsx';
 
-const Overview = function(props) {
-  const {dispatch, history, rooms, roomStatus} = props;
+const RoomFullSize = function(props) {
+  const {dispatch, rooms, roomStatus, history, match} = props;
+  
+  const id = match.params.id;
 
   useEffect(() => {
     dispatch(getRooms());
@@ -21,18 +23,15 @@ const Overview = function(props) {
     return <div className='spinner'>Loading rooms...</div>;
   }
 
-  const renderRoom = room => {
-    const status = roomStatus[room.id] || {};
+  const room = _.find(rooms.data, {id});
+  const status = roomStatus[id] || {};
 
-    return (
-      <Room key={room.id} config={room} status={status} history={history} />
-    );
-  };
+  if(!room) {
+    return <div>Room {id} not found</div>
+  }
 
   return (
-    <div className='overview'>
-      {rooms.data.map(renderRoom)}
-    </div>
+    <Room key={id} config={room} status={status} full={true} history={history} />
   );
 };
 
@@ -41,4 +40,4 @@ const mapStateToProps = state => ({
   rooms: state.rooms,
 });
 
-export default connect(mapStateToProps)(Overview);
+export default connect(mapStateToProps)(RoomFullSize);

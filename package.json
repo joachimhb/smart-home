@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "7.12.1",
-    "@joachimhb/smart-home-shared": "git+https://github.com/joachimhb/smart-home-shared.git#0.0.3",
+    "@joachimhb/smart-home-shared": "github:joachimhb/smart-home-shared#0.0.6",
     "async-mqtt": "^2.6.1",
     "check-types-2": "11.4.0",
     "classnames": "2.3.1",

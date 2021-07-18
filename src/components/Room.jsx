@@ -19,7 +19,13 @@ import {
 } from '../lib/controls';
 
 const Room = function(props) {
-  const {config = {}, status = {}, detailed} = props;
+  const {
+    history,
+    config = {}, 
+    status = {}, 
+    detailed, 
+    full
+  } = props;
 
   const [_detailed, setDetailed] = useState(Boolean(detailed));
 
@@ -30,26 +36,53 @@ const Room = function(props) {
   if(_detailed) {
     classes.push('room--detailed');
   }
+  if(full) {
+    classes.push('room--full');
+  }
+
+  const renderTemperature = temperature => {
+    const {value, since} = temperature;
+
+    if(!value) {
+      return null;
+    }
+
+    const finalTemperature = value ? value.toFixed(1) : '-';
+
+    return (
+      <div className='room__general-status__temperature' title={`Seit: ${since || 'unbekannt'}`}>
+        <div className='room__general-status__temperature__value'>{finalTemperature || '-'} C</div>
+        {_detailed ? <div className='room__general-status__temperature__since'>seit {humanDate(since) || 'unbekannt'}</div> : null}
+      </div>
+    );
+  }
+
+  const renderHumidity = humidity => {
+    const {value, since} = humidity;
+
+    if(!value) {
+      return null;
+    }
+
+    const finalHumidity = value ? value.toFixed(1) : '-';
+
+    return (
+      <div className='room__general-status__humidity' title={`Seit: ${since || 'unbekannt'}`}>
+        <div className='room__general-status__humidity__value'>{finalHumidity || '-'} %</div>
+        {_detailed ? <div className='room__general-status__humidity__since'>seit {humanDate(since) || 'unbekannt'}</div> : null}
+      </div>
+    );
+  }
 
   const renderGeneralStatus = () => {
     const {temperature, humidity} = status;
 
-    const {value: temperatureValue, since: temperatureSince} = temperature || {};
-    const {value: humidityValue, since: humiditySince} = humidity || {};
-
-    const finalTemperature = temperatureValue ? temperatureValue.toFixed(1) : '-';
-    const finalHumidity = humidityValue ? humidityValue.toFixed(1) : '-';
+    console.log(config.label, temperature, humidity);
 
     return (
       <div className='room__general-status'>
-        <div className='room__general-status__temperature' title={`Seit: ${temperatureSince || 'unbekannt'}`}>
-          <div className='room__general-status__temperature__value'>{finalTemperature || '-'} C</div>
-          {_detailed ? <div className='room__general-status__temperature__since'>seit {humanDate(temperatureSince) || 'unbekannt'}</div> : null}
-        </div>
-        <div className='room__general-status__humidity' title={`Seit: ${humiditySince || 'unbekannt'}`}>
-          <div className='room__general-status__humidity__value'>{finalHumidity || '-'} %</div>
-          {_detailed ? <div className='room__general-status__humidity__since'>seit {humanDate(humiditySince) || 'unbekannt'}</div> : null}
-        </div>
+        {renderTemperature(temperature || {})}
+        {renderHumidity(humidity || {})}
       </div>
     );
   };
@@ -134,11 +167,13 @@ const Room = function(props) {
 
   return (
     <div className={classNames(classes)}>
+      {full ? <div className='overview-link' onClick={() => history.push(`/`)}>zurueck</div> : null}
       <div className='room__header'>
         <div className='room__header__label' onClick={() => setDetailed(!_detailed)}>{config.label}</div>
         {renderGeneralStatus()}
       </div>
       {renderStatus()}
+      {full ? null : <div className='room-link' onClick={() => history.push(`/room/${config.id}`)}>details</div>}
     </div>
   );
 };

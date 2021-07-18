@@ -21,6 +21,7 @@ const {
 const {
   shutterMovement,
   shutterStatus,
+  shutterInit,
   // windowOpenStatus,
 
   fanControl,
@@ -201,6 +202,7 @@ const clientConnected = client => {
     for(const shutter of room.shutters || []) {
       await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
       await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
+      await mqttClient.subscribe(shutterInit(room.id, shutter.id));
     }
 
     for(const fan of room.fans || []) {
