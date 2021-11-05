@@ -205,10 +205,6 @@ const clientConnected = client => {
   });
 
   for(const room of config.rooms) {
-    if(room.id !== 'schlafzimmer') {
-      continue;
-    }
-
     for(const shutter of room.shutters || []) {
       await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
       await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
