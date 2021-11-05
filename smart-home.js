@@ -24,6 +24,9 @@ const {
   shutterInit,
   // windowOpenStatus,
 
+  buttonActive,
+  windowStatus,
+
   fanControl,
   fanSpeed,
   fanTrailingTime,
@@ -38,8 +41,10 @@ const {
   lightStatus,
 } = topics;
 
-const wsPort    = 3001;
-const port      = 3000;
+const {
+  port,
+  wsPort
+} = require('./config');
 
 const logger = log4js.getLogger();
 
@@ -113,8 +118,9 @@ const clientConnected = client => {
       subArea,
     ] = topic.split('/');
 
+    
     let changeDetected = false;
-
+    
     if(area === 'room') {
       const finalPath = [
         areaId,
@@ -199,10 +205,22 @@ const clientConnected = client => {
   });
 
   for(const room of config.rooms) {
+    if(room.id !== 'schlafzimmer') {
+      continue;
+    }
+
     for(const shutter of room.shutters || []) {
       await mqttClient.subscribe(shutterMovement(room.id, shutter.id));
       await mqttClient.subscribe(shutterStatus(room.id, shutter.id));
       await mqttClient.subscribe(shutterInit(room.id, shutter.id));
+    }
+
+    for(const window of room.windows || []) {
+      await mqttClient.subscribe(windowStatus(room.id, window.id));
+    }
+
+    for(const button of room.buttons || []) {
+      await mqttClient.subscribe(buttonActive(room.id, button.id));
     }
 
     for(const fan of room.fans || []) {

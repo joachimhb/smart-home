@@ -28,7 +28,7 @@
 
 .window {
   min-width: 90px;
-  max-width: 90px;
+  max-width: 120px;
 
   margin: $grid-step / 2;
   padding: $grid-step / 2;
@@ -43,12 +43,34 @@
     font-size: 10px;
   }
 
+  .window__details {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+
+    > * {
+      margin-bottom: $grid-step;
+    }
+
+    > .window__shutter__controls {
+      > * {
+        margin-right: $grid-step / 2;
+      }
+    }
+
+    .window__details__item {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+    }
+  }
+
   .window__shutter {
     display: flex;
     flex-direction: row;
 
     margin: $grid-step / 2;
-    padding: $grid-step / 2;
+    // padding: $grid-step / 2;
 
     .window__shutter__status {
       border: 6px solid rgb(124, 43, 43);
@@ -59,14 +81,14 @@
       max-width: 40px;
       background: lightblue;
       position: relative;
-      margin-right: $grid-step;
+      margin-right: $grid-step / 2;
 
       .window__shutter__status__value {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        background: #444;
+        background: rgb(95, 95, 95);
       }
     }
 
@@ -89,7 +111,7 @@
 
         &.window__shutter__controls__button--stop.active {
           > .pause > div {
-            background: #06A8FF;
+            background: $button-text-color-active;
           }
         }
 
@@ -108,7 +130,7 @@
           > div {
             width: 3px;
             height: 10px;
-            background: gray;
+            background: $button-text-color;
           }
         }
       }
@@ -116,8 +138,8 @@
       .window__shutter__controls__button--down.active,
       .window__shutter__controls__button--up.active {
         > .arrow span {
-          border-bottom: 2px solid #06A8FF;
-          border-right: 2px solid #06A8FF;
+          border-bottom: 2px solid $button-text-color-active;
+          border-right: 2px solid $button-text-color-active;
         }
       }
 
@@ -142,8 +164,8 @@
           display: block;
           width: 5px;
           height: 5px;
-          border-bottom: 2px solid gray;
-          border-right: 2px solid gray;
+          border-bottom: 2px solid $button-text-color;
+          border-right: 2px solid $button-text-color;
           margin: -2px;
         }
       }

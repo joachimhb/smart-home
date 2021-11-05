@@ -16,6 +16,7 @@ import {
   updateFanSpeed,
   updateFanConfigValue,
   updateLightStatus,
+  updateButtonActive,
 } from '../lib/controls';
 
 const Room = function(props) {
@@ -77,7 +78,7 @@ const Room = function(props) {
   const renderGeneralStatus = () => {
     const {temperature, humidity} = status;
 
-    console.log(config.label, temperature, humidity);
+    // console.log(config.label, temperature, humidity);
 
     return (
       <div className='room__general-status'>
@@ -116,6 +117,7 @@ const Room = function(props) {
     for(const id of finalWindowIds) {
       const shutterConfig = _.find(config.windows || [], {id});
       const windowConfig =  _.find(config.shutters || [], {id});
+      const buttonConfig =  _.find(config.buttons || [], {id});
 
       windowElements.push(
         <Window
@@ -123,10 +125,15 @@ const Room = function(props) {
           detailed={_detailed}
           shutterConfig={shutterConfig}
           windowConfig={windowConfig}
+          buttonConfig={buttonConfig}
           windowStatus={_.get(status, ['windows', id])}
           shutterStatus={_.get(status, ['shutters', id])}
+          buttonStatus={_.get(status, ['buttons', id])}
           onMovementChange={direction => {
             updateShutterMovement(config.id, id, direction);
+          }}
+          onButtonActiveChange={active => {
+            updateButtonActive(config.id, id, active);
           }}
         />
       );

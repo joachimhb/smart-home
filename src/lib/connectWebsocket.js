@@ -1,7 +1,9 @@
 import {updateRoomStatus} from '../actions/roomStatus';
 import {setWebsocketConnection} from '../actions/smartHome';
 
-const wsHost = 'ws://raspi-arbeitszimmer:3001';
+import {wsPort} from '../../config';
+
+const wsHost = `ws://raspi-arbeitszimmer:${wsPort}`;
 
 const connectWebsocket = function({store}) {
   const ws = new WebSocket(wsHost);
@@ -24,6 +26,8 @@ const connectWebsocket = function({store}) {
       const received = JSON.parse(event.data);
 
       const {type, id, data} = received;
+
+      // console.log(id, data);
 
       if(type === 'room_status') {
         store.dispatch(updateRoomStatus(id, data));

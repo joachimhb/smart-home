@@ -143,9 +143,9 @@ const Fan = function(props) {
       </div>
       <div className='fan__controls'>
         <button disabled={!websocketConnected} className={classNames(autoButtonClasses)} onClick={onAutoClick}>auto</button>
-        <button disabled={!websocketConnected} className={classNames(offButtonClasses)} onClick={onOffClick}>off</button>
-        <button disabled={!websocketConnected} className={classNames(minButtonClasses)} onClick={onMinClick}>min</button>
-        <button disabled={!websocketConnected} className={classNames(maxButtonClasses)} onClick={onMaxClick}>max</button>
+        <button disabled={!websocketConnected} className={classNames(offButtonClasses)}  onClick={onOffClick}>off</button>
+        <button disabled={!websocketConnected} className={classNames(minButtonClasses)}  onClick={onMinClick}>min</button>
+        <button disabled={!websocketConnected} className={classNames(maxButtonClasses)}  onClick={onMaxClick}>max</button>
       </div>
       {renderDetails()}
     </div>

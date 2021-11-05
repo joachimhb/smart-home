@@ -5,6 +5,12 @@ const webpack = require('webpack');
 
 const styleLoaders = require('./styleLoaders');
 
+const {
+  port,
+} = require('./config');
+
+const devPort = port + 2;
+
 module.exports = {
   entry: './src/index.js',
   mode: 'development',
@@ -26,13 +32,14 @@ module.exports = {
     filename: 'bundle.js'
   },
   devServer: {
-    contentBase: path.join(__dirname, 'public/'),
-    port: 3002,
+    // contentBase: path.join(__dirname, 'public/'),
+    port: devPort,
     host: '0.0.0.0',
-    publicPath: 'http://0.0.0.0:3002/public/',
-    hotOnly: true,
+    hot: true,
+    // publicPath: `http://0.0.0.0:${devPort}/public/`,
+    // hotOnly: true,
     proxy: {
-      '/api': 'http://0.0.0.0:3000',
+      '/api': `http://0.0.0.0:${port}`,
     },
   },
   plugins: [

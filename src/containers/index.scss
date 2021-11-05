@@ -18,14 +18,14 @@
 .overview-link {
   padding: 3px;
   margin-bottom: 10px;
-  color: blue;
+  color: $text-color-clickable;
   text-decoration: underline;
 }
 
 .room-link {
   padding: 3px;
   margin-top: 10px;
-  color: blue;
+  color: $text-color-clickable;
   text-decoration: underline;
   align-self: flex-end;
 }

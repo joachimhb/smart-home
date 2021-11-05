@@ -3,10 +3,9 @@
   flex: 1;
   flex-direction: column;
   // background: #eee;
-  margin: $grid-step / 2;
-  padding: $grid-step / 2;
-  border: 1px solid #bbb;
-  border-radius: 3px;
+  // padding: $grid-step / 2;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
 
   .fan__header {
     display: flex;
@@ -29,10 +28,10 @@
 
       .fan__header__status__control {
         font-weight: bold;
-        color: red;
+        color: $text-color-red;
 
         &.fan__header__status__control--auto {
-          color: blue;
+          color: $text-color-blue;
         }
       }
 
@@ -49,7 +48,7 @@
         }
 
         &.fan__header__status__value--off {
-          color: red;
+          color: $text-color-red;
         }
       }
     }

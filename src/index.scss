@@ -1,4 +1,19 @@
 $grid-step: 6px;
+$bg-color: rgb(44, 44, 44);
+$header-bg-color: rgb(32, 32, 32);
+$header-text-color: rgb(189, 189, 189);
+$text-color: rgb(202, 202, 202);
+$text-color-red: rgb(138, 14, 14);
+$text-color-blue: #2eb3fa;
+$text-color-clickable: #007fc4;
+$text-color-green: green;
+$border-color: rgb(128, 128, 128);
+$button-bg-color: rgb(117, 117, 117);
+$button-text-color: rgb(207, 207, 207);
+$button-text-color-active: rgb(0, 212, 0);
+$input-bg-color: rgb(201, 201, 201);
+$input-text-color: rgb(66, 66, 66);
+
 
 * {
   font-size: 12px;
@@ -6,6 +21,8 @@ $grid-step: 6px;
 
 html {
   overflow: hidden;
+  background: $bg-color;
+  color: $text-color;
 }
 
 * {
@@ -17,7 +34,8 @@ html {
   display: flex;
   flex: 0 0 auto;
   justify-content: space-between;
-  background: #ddd;
+  background: $header-bg-color;
+  color: $header-text-color;
   padding: $grid-step;
 
   > .header__label {
@@ -26,7 +44,7 @@ html {
   }
 
   > .header__refresh {
-    color: blue;
+    color: $text-color-clickable;
     text-decoration: underline;
     font-size: 14px;
     cursor: pointer;
@@ -35,7 +53,7 @@ html {
   > .header__websocket-connection {
     width: 14px;
     height: 14px;
-    border: 2px solid gray;
+    border: 2px solid $border-color;
     border-radius: 20px;
 
     &.header__websocket-connection--true {
@@ -61,17 +79,28 @@ html {
 }
 
 button {
-  background: white;
-  border: 1px solid gray;
+  background: $button-bg-color;
+  color: $button-text-color;
+  border: 1px solid $border-color;
   border-radius: 3px;
   font-size: 14px;
+  // margin: $grid-step / 2;
 
   &.active {
     font-weight: bold;
     background: lime;
   }
+
+  &.inactive {
+    font-weight: bold;
+    background: rgb(112, 16, 16);
+  }
 }
 
+input {
+  background: $input-bg-color;
+  color: $input-text-color;
+}
 
 
 @import './containers/index.scss';

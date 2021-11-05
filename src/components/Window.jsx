@@ -7,31 +7,55 @@ import React, {
 import WebsocketConnectionContext from '../contexts/WebsocketConnection';
 import humanDate from '../lib/humanDate';
 
-const shutter = function(props) {
-  const {windowConfig = {}, shutterConfig = {}, windowStatus = {}, shutterStatus = {}, detailed} = props;
+const Window = function(props) {
+  const {
+    windowConfig = {}, 
+    shutterConfig = {}, 
+    buttonConfig = {}, 
+    
+    windowStatus = {}, 
+    shutterStatus = {}, 
+    buttonStatus = {}, 
+    detailed
+  } = props;
 
-  const {value: windowValue, since: windowSince}     = windowStatus.status || {};
-  const {since: initSince}                           = shutterStatus.init || {};
-  const {value: statusValue, since: statusSince}     = shutterStatus.status || {};
-  const {value: movementValue, since: movementSince} = shutterStatus.movement || {};
+  const {value: windowValue, since: windowSince}             = windowStatus.status || {};
+  const {since: initSince}                                   = shutterStatus.init || {};
+  const {value: statusValue, since: statusSince}             = shutterStatus.status || {};
+  const {value: movementValue, since: movementSince}         = shutterStatus.movement || {};
+  const {value: buttonActiveValue, since: buttonActiveSince} = buttonStatus.active || {};
 
   const websocketConnected = useContext(WebsocketConnectionContext);
 
-  const onUpClick   = () => props.onMovementChange('up');
-  const onStopClick = () => props.onMovementChange('stop');
-  const onDownClick = () => props.onMovementChange('down');
+  const onUpClick     = () => props.onMovementChange('up');
+  const onStopClick   = () => props.onMovementChange('stop');
+  const onDownClick   = () => props.onMovementChange('down');
+  // const onFixedClick  = value => props.onFixedStatus(value);
+  const onSwitchClick = () => props.onButtonActiveChange(!buttonActiveValue);
+
+  let windowHumanValue = null;
+
+  if(!_.isNil(windowValue)) {
+    windowHumanValue = windowValue === 'open' ? 'offen' : 'geschlossen';
+  }
+
+  let buttonHumanValue = null;
+
+  if(!_.isNil(buttonActiveValue)) {
+    buttonHumanValue = buttonActiveValue === false ? 'inaktiv' : 'aktiv';
+  }
 
   const renderOpenStatus = () => {
     if(!windowConfig.id) {
       return null;
     }
 
-    if(_.isNil(windowValue)) {
+    if(!windowHumanValue) {
       return null;
     }
 
     return (
-      <div className='window__open-status' title={`Seit: ${windowSince}`}>{windowValue ? 'offen' : 'geschlossen'}</div>
+      <div className='window__open-status' title={`Seit: ${windowSince}`}>{windowHumanValue}</div>
     );
   };
 
@@ -61,11 +85,42 @@ const shutter = function(props) {
     movementValue === 'down' ? 'active' : '',
   ];
 
+  const activeButtonClasses = [
+    ...buttonClasses,
+    'window__shutter__controls__button--active',
+    buttonActiveValue === false ? 'inactive' : 'active',
+  ];
+
+  const renderAdditionalControls = () => {
+    const additionalControls = [
+      // <button key='40' disabled={!websocketConnected} className={classNames(buttonClasses)} onClick={() => onFixedClick(40)}>
+      //     40
+      // </button>,
+      // <button key='80' disabled={!websocketConnected} className={classNames(buttonClasses)} onClick={() => onFixedClick(80)}>
+      //     80
+      // </button>,
+    ];  
+  
+    if(buttonConfig.id) {
+      additionalControls.unshift(
+        <button key='button-active' disabled={!websocketConnected} className={classNames(activeButtonClasses)} onClick={onSwitchClick}>
+          L
+        </button>
+      )
+    }
+  
+    return (
+      <div className='window__shutter__controls'>
+        {additionalControls}
+      </div>
+    );
+  }
+
   const renderShutter = () => {
     if(!shutterConfig.id) {
       return null;
     }
-
+    
     return (
       <div className='window__shutter'>
         <div className='window__shutter__status' title={`Seit: ${statusSince}`}>
@@ -93,23 +148,48 @@ const shutter = function(props) {
       return null;
     }
 
-    return [
-      <div key='label'>Control start</div>,
-      <div key='value' style={{
-        fontSize: '10px',
-        fontStyle: 'italic',
-      }}>{humanDate(initSince)}</div>,
-    ];
+    return (
+      <div className='window__details'>
+        {renderAdditionalControls()}
+        <div className='window__details__item'>
+          <div>Control start</div>
+          <div style={{
+            fontSize: '10px',
+            fontStyle: 'italic',
+          }}>{humanDate(initSince)}</div>
+        </div>
+        {windowSince ? 
+          <div className='window__details__item'>
+            <div>{windowHumanValue}</div>
+            <div style={{
+              fontSize: '10px',
+              fontStyle: 'italic',
+            }}>{humanDate(windowSince)}</div>
+          </div>
+          : null
+        }
+        {buttonActiveSince ? 
+          <div className='window__details__item'>
+            <div>Schalter: {buttonHumanValue}</div>
+            <div style={{
+              fontSize: '10px',
+              fontStyle: 'italic',
+            }}>{humanDate(buttonActiveSince)}</div>
+          </div>
+          : null
+        }
+      </div>
+    );
   }
 
   return (
     <div className='window'>
       <div className='window__label'>{labels.join('/')}</div>
-      {renderDetails()}
       {renderOpenStatus()}
       {renderShutter()}
+      {renderDetails()}
     </div>
   );
 };
 
-export default shutter;
+export default Window;
