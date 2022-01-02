@@ -9,22 +9,12 @@ import WebsocketConnectionContext from '../contexts/WebsocketConnection';
 import humanDate from '../lib/humanDate';
 
 const Fan = function(props) {
-  const {config = {}, status = {}, detailed} = props;
+  const {config = {}, status = {}} = props;
+
+  const [_detailed, setDetailed] = useState(false);
 
   const {value: speedValue, since: speedSince} = status.speed || {};
   const {value: controlValue, since: controlSince} = status.control || {};
-
-  const minHumidityThreshold = _.get(status, ['minHumidityThreshold', 'value'], config.minHumidityThreshold);
-  const maxHumidityThreshold = _.get(status, ['maxHumidityThreshold', 'value'], config.maxHumidityThreshold);
-  const minRunTime = _.get(status, ['minRunTime', 'value'], config.minRunTime);
-  const lightTimeout = _.get(status, ['lightTimeout', 'value'], config.lightTimeout);
-  const trailingTime = _.get(status, ['trailingTime', 'value'], config.trailingTime);
-
-  const [_minHumidityThreshold, setMinHumidityThreshold] = useState(minHumidityThreshold);
-  const [_maxHumidityThreshold, setMaxHumidityThreshold] = useState(maxHumidityThreshold);
-  const [_minRunTime, setMinRunTime]                     = useState(minRunTime);
-  const [_lightTimeout, setLightTimeout]                 = useState(lightTimeout);
-  const [_trailingTime, setTrailingTime]                 = useState(trailingTime);
 
   const websocketConnected = useContext(WebsocketConnectionContext);
 
@@ -32,26 +22,6 @@ const Fan = function(props) {
   const onOffClick  = () => props.onSpeedChange('off');
   const onMinClick  = () => props.onSpeedChange('min');
   const onMaxClick  = () => props.onSpeedChange('max');
-
-  const onUpdateConfigClick = () => {
-    if(maxHumidityThreshold !== _maxHumidityThreshold) {
-      props.onConfigChange('maxHumidityThreshold', _maxHumidityThreshold);
-    }
-    if(minHumidityThreshold !== _minHumidityThreshold) {
-      props.onConfigChange('minHumidityThreshold', _minHumidityThreshold);
-    }
-    if(minRunTime !== _minRunTime) {
-      props.onConfigChange('minRunTime', _minRunTime);
-    }
-    if(lightTimeout !== _lightTimeout) {
-      props.onConfigChange('lightTimeout', _lightTimeout);
-    }
-    if(trailingTime !== _trailingTime) {
-      props.onConfigChange('trailingTime', _trailingTime);
-    }
-  };
-
-  const updateButtonClasses = [];
 
   const buttonClasses = [
     'fan__controls__button',
@@ -82,7 +52,7 @@ const Fan = function(props) {
   ];
 
   const renderDetails = () => {
-    if(!detailed) {
+    if(!_detailed) {
       return null;
     }
 
@@ -90,37 +60,6 @@ const Fan = function(props) {
       <div className='fan__details'>
         <div className='fan__details__control'>[{controlValue}] seit {humanDate(controlSince) || 'unbekannt'}</div>
         <div className='fan__details__control'>[{speedValue}]   seit {humanDate(speedSince) || 'unbekannt'}</div>
-        <br />
-        <div style={{fontWeight: 'bold'}}>Config:</div>
-        <div className='fan__details__config'>
-          <div className='fan__details__config__row'>
-            <div className='fan__details__config__row__label'>Humidity min: </div>
-            <input type='number' value={_minHumidityThreshold} onChange={ev => setMinHumidityThreshold(ev.target.value)} />
-            <div className='fan__details__config__row__unit'>%</div>
-          </div>
-          <div className='fan__details__config__row'>
-            <div className='fan__details__config__row__label'>Humidity max: </div>
-            <input type='number' value={_maxHumidityThreshold} onChange={ev => setMaxHumidityThreshold(ev.target.value)} />
-            <div className='fan__details__config__row__unit'>%</div>
-          </div>
-          <div className='fan__details__config__row'>
-            <div className='fan__details__config__row__label'>Min run time: </div>
-            <input type='number' value={_minRunTime} onChange={ev => setMinRunTime(ev.target.value)} />
-            <div className='fan__details__config__row__unit'>sek</div>
-          </div>
-          <div className='fan__details__config__row'>
-            <div className='fan__details__config__row__label'>Light timeout: </div>
-            <input type='number' value={_lightTimeout} onChange={ev => setLightTimeout(ev.target.value)} />
-            <div className='fan__details__config__row__unit'>sek</div>
-          </div>
-          <div className='fan__details__config__row'>
-            <div className='fan__details__config__row__label'>Trailing time: </div>
-            <input type='number' value={_trailingTime} onChange={ev => setTrailingTime(ev.target.value)} />
-            <div className='fan__details__config__row__unit'>sek</div>
-          </div>
-          <button disabled={!websocketConnected} className={classNames(updateButtonClasses)} onClick={onUpdateConfigClick}>update</button>
-        </div>
-
       </div>
     );
   };
@@ -128,7 +67,7 @@ const Fan = function(props) {
   return (
     <div className='fan'>
       <div className='fan__header'>
-        <div className='fan__header__label'>
+        <div className='fan__header__label' onClick={() => setDetailed(!_detailed)}>
           {config.label}
         </div>
         <div className='fan__header__status'>
@@ -144,6 +83,8 @@ const Fan = function(props) {
       <div className='fan__controls'>
         <button disabled={!websocketConnected} className={classNames(autoButtonClasses)} onClick={onAutoClick}>auto</button>
         <button disabled={!websocketConnected} className={classNames(offButtonClasses)}  onClick={onOffClick}>off</button>
+      </div>
+      <div className='fan__controls'>
         <button disabled={!websocketConnected} className={classNames(minButtonClasses)}  onClick={onMinClick}>min</button>
         <button disabled={!websocketConnected} className={classNames(maxButtonClasses)}  onClick={onMaxClick}>max</button>
       </div>

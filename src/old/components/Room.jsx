@@ -7,7 +7,6 @@ import React, {
 import Light from './Light.jsx';
 import Fan from './Fan.jsx';
 import Window from './Window.jsx';
-import Shutter from './Shutter.jsx';
 
 import humanDate from '../lib/humanDate';
 
@@ -117,33 +116,29 @@ const Room = function(props) {
     for(const windowConfig of config.windows || []) {
       const {id, shutterId} = windowConfig;
 
-      let shutter = null;
+      let shutterConfig = null;
 
       if(shutterId) {
-        const shutterConfig = _.find(config.shutters || [], {id: shutterId});
-        const shutterData = _.get(status, ['shutters', shutterId])
-
-        shutter = (
-          <Shutter 
-            config={shutterConfig}
-            data={shutterData}
-            onMovementChange={direction => {
-              updateShutterMovement(config.id, shutterId, direction);
-            }}
-            onMoveToSet={value => {
-              setShutterMoveTo(config.id, shutterId, value);
-            }}
-          />
-        );
+        shutterConfig = _.find(config.shutters || [], {id: shutterId});
       }
 
       windowElements.push(
         <Window
           key={id}
           detailed={_detailed}
-          config={windowConfig}
-          status={_.get(status, ['windows', id, 'status'])}
-          shutter={shutter}
+          shutterConfig={shutterConfig}
+          windowConfig={windowConfig}
+          windowStatus={_.get(status, ['windows', id])}
+          shutterStatus={_.get(status, ['shutters', shutterId])}
+          onMovementChange={direction => {
+            updateShutterMovement(config.id, id, direction);
+          }}
+          onMoveToSet={value => {
+            setShutterMoveTo(config.id, id, value);
+          }}
+          onButtonActiveChange={active => {
+            updateButtonActive(config.id, id, active);
+          }}
         />
       );
     }

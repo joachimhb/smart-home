@@ -32,10 +32,10 @@ module.exports = {
     filename: 'bundle.js'
   },
   devServer: {
+    allowedHosts: 'all',
     // contentBase: path.join(__dirname, 'public/'),
     port: devPort,
     host: '0.0.0.0',
-    hot: true,
     // publicPath: `http://0.0.0.0:${devPort}/public/`,
     // hotOnly: true,
     proxy: {

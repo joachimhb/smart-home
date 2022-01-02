@@ -21,6 +21,12 @@ export const updateButtonActive = async(room, switchId, value) => {
   await client.put(url, {value});
 };
 
+export const setShutterMoveTo = async(room, shutter, value) => {
+  const url = `${apiBase}rooms/${room}/shutters/${shutter}/moveTo`;
+
+  await client.put(url, {value});
+};
+
 export const updateFanControl = async(room, fan, value) => {
   const url = `${apiBase}rooms/${room}/fans/${fan}/control`;
 

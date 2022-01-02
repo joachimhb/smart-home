@@ -1,0 +1,200 @@
+@keyframes animateShutterControlDown {
+  0%{
+      opacity: 0;
+      transform: rotate(45deg) translate(-3px,-3px);
+  }
+  50%{
+      opacity: 1;
+  }
+  100%{
+      opacity: 0;
+      transform: rotate(45deg) translate(3px,3px);
+  }
+}
+
+@keyframes animateShutterControlUp {
+  0%{
+      opacity: 0;
+      transform: rotate(225deg) translate(-3px,-3px);
+  }
+  50%{
+      opacity: 1;
+  }
+  100%{
+      opacity: 0;
+      transform: rotate(225deg) translate(3px,3px);
+  }
+}
+
+.window {
+  min-width: 90px;
+  max-width: 120px;
+
+  margin: $grid-step / 2;
+  padding: $grid-step / 2;
+
+  .window__label {
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .window__open-status {
+    font-style: italic;
+    font-size: 10px;
+  }
+
+  .window__details {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+
+    > * {
+      margin-bottom: $grid-step;
+    }
+
+    > .window__shutter__controls {
+      > * {
+        margin-right: $grid-step / 2;
+      }
+    }
+
+    .window__details__item {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+    }
+  }
+
+  .window__shutter {
+    display: flex;
+    flex-direction: row;
+
+    margin: $grid-step / 2;
+    // padding: $grid-step / 2;
+
+    .window__shutter__status {
+      border: 6px solid rgb(124, 43, 43);
+      border-radius: 2px;
+      min-height: 70px;
+      max-height: 70px;
+      min-width: 40px;
+      max-width: 40px;
+      background: lightblue;
+      position: relative;
+      margin-right: $grid-step / 2;
+
+      .window__shutter__status__value {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgb(95, 95, 95);
+      }
+    }
+
+    .window__shutter__controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .window__shutter__controls__button.active {
+        background: initial;
+      }
+
+      .window__shutter__controls__button {
+        position: relative;
+      }
+
+      .window__shutter__controls__button--stop {
+        width: 20px;
+        height: 20px;
+
+        &.window__shutter__controls__button--stop.active {
+          > .pause > div {
+            background: $button-text-color-active;
+          }
+        }
+
+        > .pause {
+          position: absolute;
+          top: 0;
+          right: 2px;
+          left: 2px;
+          bottom: 0;
+          display: flex;
+          flex: 1;
+          flex-direction: row;
+          justify-content: space-around;
+          align-items: center;
+
+          > div {
+            width: 3px;
+            height: 10px;
+            background: $button-text-color;
+          }
+        }
+      }
+
+      .window__shutter__controls__button--down.active,
+      .window__shutter__controls__button--up.active {
+        > .arrow span {
+          border-bottom: 2px solid $button-text-color-active;
+          border-right: 2px solid $button-text-color-active;
+        }
+      }
+
+      .window__shutter__controls__button--down.active {
+        > .arrow span {
+          animation: animateShutterControlDown 2s infinite;
+        }
+      }
+
+      .window__shutter__controls__button--up.active {
+        > .arrow span {
+          animation: animateShutterControlUp 2s infinite;
+        }
+      }
+
+      .window__shutter__controls__button--up,
+      .window__shutter__controls__button--down {
+        width: 20px;
+        height: 26px;
+
+        > .arrow span {
+          display: block;
+          width: 5px;
+          height: 5px;
+          border-bottom: 2px solid $button-text-color;
+          border-right: 2px solid $button-text-color;
+          margin: -2px;
+        }
+      }
+
+      .window__shutter__controls__button--down {
+        > .arrow {
+          position: absolute;
+          top: 40%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+        }
+
+        > .arrow span {
+            transform: rotate(45deg);
+        }
+      }
+
+      .window__shutter__controls__button--up {
+        > .arrow {
+          position: absolute;
+          top: 60%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+        }
+
+        > .arrow span {
+            transform: rotate(225deg);
+        }
+      }
+    }
+  }
+}

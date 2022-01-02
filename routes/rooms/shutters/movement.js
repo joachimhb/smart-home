@@ -4,7 +4,11 @@ const {
   topics,
 } = require('@joachimhb/smart-home-shared');
 
-const {shutterMovement} = topics;
+const {
+  shutterUp,
+  shutterDown,
+  shutterStop,
+} = topics;
 
 module.exports = async function movement({mqttClient, logger}) {
   return {
@@ -16,7 +20,13 @@ module.exports = async function movement({mqttClient, logger}) {
 
         logger.info(`${room} / ${shutter} - movement: ${req.body.value}`);
 
-        await mqttClient.publish(shutterMovement(room, shutter), {value: req.body.value}, {retain: true});
+        if(req.body.value === 'up') {
+          await mqttClient.publish(shutterUp(room, shutter), {value: req.body.value});
+        } else if(req.body.value === 'down') {
+          await mqttClient.publish(shutterDown(room, shutter), {value: req.body.value});
+        } else if(req.body.value === 'stop') {
+          await mqttClient.publish(shutterStop(room, shutter), {value: req.body.value});
+        }
 
         res.json({handled: true});
       } catch(err) {

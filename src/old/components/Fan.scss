@@ -2,6 +2,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  // background: #eee;
+  // padding: $grid-step / 2;
   border-top: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
 
@@ -63,12 +65,38 @@
       margin: $grid-step / 4;
       margin-right: $grid-step / 2;
     }
+
+    .fan__details__config {
+      .fan__details__config__row {
+        display: flex;
+        flex: 0 0 auto;;
+        flex-direction: row;
+        align-items: center;
+
+        > * {
+          margin: $grid-step / 4;
+          // margin-right: $grid-step / 2;
+        }
+
+        .fan__details__config__row__label {
+          width: 100px;
+        }
+        .fan__details__config__row__unit {
+          width: 20px;
+        }
+        input {
+          text-align: right;
+          width: 30px;
+        }
+      }
+    }
   }
+
+
 
   .fan__controls {
     > * {
-      margin: $grid-step / 2;
-      min-width: 50px;
+      margin-right: $grid-step;
     }
   }
 }
