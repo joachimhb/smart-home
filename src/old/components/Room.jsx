@@ -29,7 +29,7 @@ const Room = function(props) {
     full
   } = props;
 
-  console.log(config, status);
+  // console.log(config, status);
 
   const [_detailed, setDetailed] = useState(Boolean(detailed));
 

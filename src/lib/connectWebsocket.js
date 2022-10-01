@@ -1,5 +1,6 @@
-import {updateRoomStatus} from '../actions/roomStatus';
-import {setWebsocketConnection} from '../actions/smartHome';
+import {updateRoomStatus}        from '../actions/roomStatus';
+import {updateRoomStatusHistory} from '../actions/roomStatusHistory';
+import {setWebsocketConnection}  from '../actions/smartHome';
 
 import {wsPort} from '../../config';
 
@@ -25,16 +26,20 @@ const connectWebsocket = function({store}) {
     try {
       const received = JSON.parse(event.data);
 
-      const {type, id, data} = received;
+      const {type, id, status, statusHistory} = received;
 
       // console.log(id, data);
 
-      if(type === 'room_status') {
-        store.dispatch(updateRoomStatus(id, data));
+      if(type === 'room') {
+        store.dispatch(updateRoomStatus(id, status));
+
+        if(statusHistory) {
+          store.dispatch(updateRoomStatusHistory(id, statusHistory));
+        }
       }
 
       // console.log(event);
-      // console.log(JSON.stringify({type, id, data}, null, 2));
+      // console.log(JSON.stringify({type, id, status, statusHistory}, null, 2));
     } catch(err) {
       console.warn('Websocket', err);
     }

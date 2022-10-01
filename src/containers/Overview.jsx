@@ -7,7 +7,7 @@ import {getRooms} from '../actions/rooms.js';
 import Room from '../components/Room.jsx';
 
 const Overview = function(props) {
-  const {dispatch, history, rooms, roomStatus} = props;
+  const {dispatch, history, rooms, roomStatus = {}, roomStatusHistory = {}} = props;
 
   useEffect(() => {
     dispatch(getRooms());
@@ -21,11 +21,14 @@ const Overview = function(props) {
     return <div className='spinner'>Loading rooms...</div>;
   }
 
+  // console.log('Overview', {roomStatus});
+
   const renderRoom = room => {
-    const status = roomStatus[room.id] || {};
+    const status        = roomStatus[room.id] || {};
+    const statusHistory = roomStatusHistory[room.id];
 
     return (
-      <Room key={room.id} config={room} status={status} history={history} />
+      <Room key={room.id} config={room} status={status} statusHistory={statusHistory} history={history} />
     );
   };
 
@@ -38,6 +41,7 @@ const Overview = function(props) {
 
 const mapStateToProps = state => ({
   roomStatus: state.roomStatus,
+  roomStatusHistory: state.roomStatusHistory,
   rooms: state.rooms,
 });
 

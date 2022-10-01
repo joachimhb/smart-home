@@ -1,5 +1,5 @@
 {
-  "name": "smart-home-control",
+  "name": "smart-home",
   "version": "0.3.0",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "react-hot-loader": "4.13.0",
     "react-redux": "^7.2.3",
     "react-router": "5.2.x",
+    "react-vis": "^1.11.7",
     "redux": "^4.1.0",
     "redux-logger": "3.0.6",
     "redux-thunk": "^2.3.0",

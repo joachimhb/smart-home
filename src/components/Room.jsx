@@ -9,6 +9,8 @@ import Fan from './Fan.jsx';
 import Window from './Window.jsx';
 import Shutter from './Shutter.jsx';
 
+import RoomHistoryChart from './RoomHistoryChart.jsx';
+
 import humanDate from '../lib/humanDate';
 
 import {
@@ -26,16 +28,18 @@ const Room = function(props) {
     history,
     config = {}, 
     status = {}, 
+    statusHistory, 
     detailed, 
     full
   } = props;
 
-  console.log(config, status);
+  // console.log(props)
 
   const [_detailed, setDetailed] = useState(Boolean(detailed));
 
   const classes = [
     'room',
+    `room-${config.id}`,
   ];
 
   if(_detailed) {
@@ -75,6 +79,14 @@ const Room = function(props) {
         {_detailed ? <div className='room__general-status__humidity__since'>seit {humanDate(since) || 'unbekannt'}</div> : null}
       </div>
     );
+  }
+
+  const renderHistoryChart = () => {
+    if(!full || !statusHistory) {
+      return null;
+    }
+
+    return <RoomHistoryChart data={statusHistory} />
   }
 
   const renderGeneralStatus = () => {
@@ -175,14 +187,25 @@ const Room = function(props) {
         <div className='room__status__windows'>
           {windowElements}
         </div>
+        {renderHistoryChart()}
       </div>
     );
   };
 
   // console.log(JSON.stringify({config, status}, null, 2));
 
+  const style = {};
+
+  if([
+    'kinderzimmer',
+    'arbeitszimmer',
+    'schlafzimmer',
+  ].includes(config.id)) {
+    style.minWidth = '110px';
+  }
+
   return (
-    <div className={classNames(classes)}>
+    <div className={classNames(classes)} style={style}>
       {full ? <div className='overview-link' onClick={() => history.push(`/`)}>zurueck</div> : null}
       <div className='room__header'>
         <div className='room__header__label' onClick={() => setDetailed(!_detailed)}>{config.label}</div>

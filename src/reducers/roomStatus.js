@@ -1,9 +1,7 @@
 
 import {ROOM_STATUS_UPDATE} from '../actions/roomStatus';
 
-const defaultStore = {
-  websocketConnected: null,
-};
+const defaultStore = {};
 
 const roomStatus = function(store = defaultStore, action) {
   const {

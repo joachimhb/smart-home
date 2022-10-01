@@ -78,6 +78,7 @@ app.use(express.static('dist'));
 app.use(morgan('dev'));
 
 const status = {};
+const statusHistory = {};
 
 const wss = new WebSocket.Server({port: wsPort});
 
@@ -92,9 +93,10 @@ const clientsBroadcast = function(data) {
 const clientConnected = client => {
   for(const id of Object.keys(status)) {
     const data = {
-      type: 'room_status',
+      type: 'room',
       id,
-      data: status[id],
+      status: status[id],
+      statusHistory: statusHistory[id] || [],
     };
 
     client.send(JSON.stringify(data));
@@ -142,14 +144,37 @@ const clientConnected = client => {
 
     if(changeDetected) {
       const updated = {
-        type: 'room_status',
+        type: 'room',
         id: areaId,
-        data: status[areaId],
+        status: status[areaId],
+        statusHistory: statusHistory[areaId] || [],
       };
 
       clientsBroadcast(updated);
     }
   };
+
+  setInterval(() => {
+    // console.log(status);
+    for(const areaId of ['bad']) {
+      const temperature = _.get(status, [areaId, 'temperature', 'value'], 0);
+      const humidity    = _.get(status, [areaId, 'humidity', 'value'], 0);
+
+      statusHistory[areaId] = statusHistory[areaId] || [];
+
+      statusHistory[areaId].push({
+        time: new Date().toISOString(),
+        temperature,
+        humidity,
+      });
+
+      // console.log('history', areaId, statusHistory[areaId]);
+
+      while(statusHistory[areaId].length > 60 * 24) {
+        statusHistory[areaId].shift();
+      }
+    }
+  }, 10 * 1000);
 
   await mqttClient.init(handleMqttMessage);
 
