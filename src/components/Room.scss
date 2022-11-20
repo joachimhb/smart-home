@@ -19,7 +19,7 @@
 
     .room__header__label {
       font-weight: bold;
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .room__general-status {
@@ -33,11 +33,17 @@
         flex: 0 0 auto;
         flex-direction: row;
         align-items: center;
+        white-space: nowrap;
+      }
+
+      .room__general-status__humidity__value,
+      .room__general-status__temperature__value {
+        font-size: 10px;
       }
 
       .room__general-status__humidity__since,
       .room__general-status__temperature__since {
-        font-size: 10px;
+        font-size: 8px;
         font-style: italic;
       }
 
@@ -45,10 +51,10 @@
         display: flex;
         flex: 0 0 auto;
         flex-direction: row;
-        margin: $grid-step / 2;
+        margin: $grid-step / 3;
 
         > * {
-          margin-right: $grid-step / 2;
+          margin-right: $grid-step / 3;
         }
       }
     }

@@ -1,47 +1,50 @@
 import React from 'react';
 
 import {
-  XYPlot,
+  LineChart,
   XAxis,
   YAxis,
-  ChartLabel,
-  HorizontalGridLines,
-  VerticalGridLines,
-  LineSeries,
-  LineSeriesCanvas
-} from 'react-vis';
+  Line,
+  CartesianGrid,
+} from 'recharts';
 
 const RoomHistoryChart = function(props) {
   const {data} = props;
+  const chartData = [];
 
-  const temperature = [];
-  const humidity    = [];
-
-  console.log(data);
+  const fanStatusValue = {
+    'min': 20,
+    'max': 24,
+    'off': 16,
+  }
 
   for(const rec of data) {
-    temperature.push({
+    chartData.push({
       x: new Date(rec.time).valueOf(),
-      y: rec.temperature,
-    });
-
-    humidity.push({
-      x: new Date(rec.time).valueOf(),
-      y: rec.humidity,
-    });
+      fanStatus: fanStatusValue[rec.fan],
+      temperature: rec.temperature,
+      humidity: rec.humidity,
+    })
   }
+
+  console.log(data, chartData);
   
   return (
-    <div style={{width: '300px', height: '150px', background: 'white'}}>
-      <XYPlot width={300} height={150}>
-        <HorizontalGridLines />
-        <VerticalGridLines />
-        <XAxis style={{text: {fontSize: '8px'}}} tickFormat={value => `${new Date(value).getHours()}:${String(new Date(value).getMinutes()).padStart(2, '0')}`} />
-        <YAxis style={{text: {fontSize: '8px'}}}  />
-        {/* <YAxis id='right' orientation="right" title="humidity"/> */}
-        <LineSeries data={temperature} color='red' />
-        <LineSeries data={humidity} />
-      </XYPlot>
+    <div style={{width: '400px', height: '300px', background: 'white'}}>
+      <LineChart
+        width={400}
+        height={300}
+        data={chartData}
+        margin={{top: 5, right: 5, left: 5, bottom: 5}}
+      >
+        <XAxis dataKey="x" tickFormatter={value => `${new Date(value).getHours()}:${String(new Date(value).getMinutes()).padStart(2, '0')}`} />
+        <CartesianGrid stroke="#f5f5f5" />
+        <YAxis yAxisId='left' domain={[16, 32]} />
+        <YAxis yAxisId='right' orientation='right' domain={[40, 100]} />
+        <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="temperature" stroke="red" yAxisId='left' />
+        <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="fanStatus" stroke="green" yAxisId='left' />
+        <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="humidity" stroke="blue" yAxisId='right' />
+      </LineChart>
     </div>
   );
 };

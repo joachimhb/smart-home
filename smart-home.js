@@ -156,9 +156,10 @@ const clientConnected = client => {
 
   setInterval(() => {
     // console.log(status);
-    for(const areaId of ['bad']) {
+    for(const areaId of ['bad', 'schlafimmer']) {
       const temperature = _.get(status, [areaId, 'temperature', 'value'], 0);
       const humidity    = _.get(status, [areaId, 'humidity', 'value'], 0);
+      const fan    = _.get(status, [areaId, 'fan', 'value'], 'off');
 
       statusHistory[areaId] = statusHistory[areaId] || [];
 
@@ -166,15 +167,16 @@ const clientConnected = client => {
         time: new Date().toISOString(),
         temperature,
         humidity,
+        fan
       });
 
       // console.log('history', areaId, statusHistory[areaId]);
 
-      while(statusHistory[areaId].length > 60 * 24) {
+      while(statusHistory[areaId].length > 60 * 12) {
         statusHistory[areaId].shift();
       }
     }
-  }, 10 * 1000);
+  }, 60 * 1000);
 
   await mqttClient.init(handleMqttMessage);
 
