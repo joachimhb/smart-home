@@ -15,19 +15,25 @@ const RoomHistoryChart = function(props) {
   const fanStatusValue = {
     'min': 20,
     'max': 24,
-    'off': 16,
+    'off': 14,
+  }
+
+  const windowStatusValue = {
+    'open': 28,
+    'closed': 14,
   }
 
   for(const rec of data) {
     chartData.push({
       x: new Date(rec.time).valueOf(),
-      fanStatus: fanStatusValue[rec.fan],
+      fanStatus: fanStatusValue[rec.fan] || 14,
+      windowStatus: windowStatusValue[rec.window] || 14,
       temperature: rec.temperature,
       humidity: rec.humidity,
     })
   }
 
-  console.log(data, chartData);
+  // console.log(data, chartData);
   
   return (
     <div style={{width: '400px', height: '300px', background: 'white'}}>
@@ -43,6 +49,8 @@ const RoomHistoryChart = function(props) {
         <YAxis yAxisId='right' orientation='right' domain={[40, 100]} />
         <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="temperature" stroke="red" yAxisId='left' />
         <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="fanStatus" stroke="green" yAxisId='left' />
+        <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="windowStatus" stroke="cyan" yAxisId='left' />
+
         <Line dot={false} strokeWidth={0.2} type="monotone" dataKey="humidity" stroke="blue" yAxisId='right' />
       </LineChart>
     </div>

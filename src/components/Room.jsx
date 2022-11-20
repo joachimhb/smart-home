@@ -107,6 +107,10 @@ const Room = function(props) {
     const windowElements = [];
 
     for(const fan of config.fans || []) {
+      if(config.id === 'schlafzimmer' && !_detailed) {
+        continue;
+      }
+
       fanElements.push(
         <Fan
           key={fan.id}

@@ -156,10 +156,13 @@ const clientConnected = client => {
 
   setInterval(() => {
     // console.log(status);
-    for(const areaId of ['bad', 'schlafimmer']) {
+    for(const areaId of ['bad', 'schlafzimmer']) {
+      console.log(JSON.stringify(_.get(status, [areaId]), null, 2));
+
       const temperature = _.get(status, [areaId, 'temperature', 'value'], 0);
       const humidity    = _.get(status, [areaId, 'humidity', 'value'], 0);
-      const fan    = _.get(status, [areaId, 'fan', 'value'], 'off');
+      const fan    = _.get(status, [areaId, 'fans', 'lueftung', 'speed', 'value'], 'off');
+      const window = _.get(status, [areaId, 'windows', 'fenster', 'status', 'value'], 'closed');
 
       statusHistory[areaId] = statusHistory[areaId] || [];
 
@@ -167,16 +170,17 @@ const clientConnected = client => {
         time: new Date().toISOString(),
         temperature,
         humidity,
-        fan
+        fan,
+        window
       });
 
       // console.log('history', areaId, statusHistory[areaId]);
 
-      while(statusHistory[areaId].length > 60 * 12) {
+      while(statusHistory[areaId].length > 60 * 24 * 2) {
         statusHistory[areaId].shift();
       }
     }
-  }, 60 * 1000);
+  }, 30 * 1000);
 
   await mqttClient.init(handleMqttMessage);
 
