@@ -9,7 +9,7 @@ import Fan from './Fan.jsx';
 import Window from './Window.jsx';
 import Shutter from './Shutter.jsx';
 
-import RoomHistoryChart from './RoomHistoryChart.jsx';
+import RoomHistoryChart from '../containers/RoomHistoryChart.jsx';
 
 import humanDate from '../lib/humanDate';
 
@@ -82,11 +82,11 @@ const Room = function(props) {
   }
 
   const renderHistoryChart = () => {
-    if(!full || !statusHistory) {
+    if(!full || !['bad', 'schlafzimmer'].includes(config.id)) {
       return null;
     }
 
-    return <RoomHistoryChart data={statusHistory} />
+    return <RoomHistoryChart id={config.id} />
   }
 
   const renderGeneralStatus = () => {

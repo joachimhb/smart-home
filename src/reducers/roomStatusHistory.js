@@ -1,23 +1,61 @@
 
-import {ROOM_STATUS_HISTORY_UPDATE} from '../actions/roomStatusHistory';
+import {
+  ROOM_STATUS_HISTORY_REQUEST,
+  ROOM_STATUS_HISTORY_SUCCESS,
+  ROOM_STATUS_HISTORY_ERROR,
+  ROOM_STATUS_HISTORY_CLEAR,
+} from '../actions/roomStatusHistory';
 
 const defaultStore = {};
 
-const roomHistory = function(store = defaultStore, action) {
+const rooms = function(store = defaultStore, action) {
   const {
     type,
-    id,
     data,
+    error,
+    id,
   } = action;
 
-  if(type === ROOM_STATUS_HISTORY_UPDATE) {
+  if(type === ROOM_STATUS_HISTORY_REQUEST) {
     return {
       ...store,
-      [id]: data,
+      [id]: {
+        ...store[id],
+        loading: true,
+      }
+    };
+  }
+
+  if(type === ROOM_STATUS_HISTORY_SUCCESS) {
+    return {
+      ...store,
+      [id]: {
+        ...store[id],
+        loading: false,
+        data,
+      }
+    };
+  }
+
+  if(type === ROOM_STATUS_HISTORY_ERROR) {
+    return {
+      ...store,
+      [id]: {
+        ...store[id],
+        loading: false,
+        error,
+      }
+    };
+  }
+
+  if(type === ROOM_STATUS_HISTORY_CLEAR) {
+    return {
+      ...store,
+      [id]: defaultStore,
     };
   }
 
   return store;
 };
 
-export default roomHistory;
+export default rooms;

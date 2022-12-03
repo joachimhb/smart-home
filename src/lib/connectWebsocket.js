@@ -1,5 +1,4 @@
 import {updateRoomStatus}        from '../actions/roomStatus';
-import {updateRoomStatusHistory} from '../actions/roomStatusHistory';
 import {setWebsocketConnection}  from '../actions/smartHome';
 
 import {wsPort} from '../../config';
@@ -32,10 +31,6 @@ const connectWebsocket = function({store}) {
 
       if(type === 'room') {
         store.dispatch(updateRoomStatus(id, status));
-
-        if(statusHistory) {
-          store.dispatch(updateRoomStatusHistory(id, statusHistory));
-        }
       }
 
       // console.log(event);

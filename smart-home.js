@@ -1,9 +1,10 @@
 'use strict';
 
 const http = require('http');
+const path = require('path');
 
 const _          = require('lodash');
-// const fs         = require('fs-extra');
+const fs         = require('fs-extra');
 const log4js     = require('log4js');
 const express    = require('express');
 const bodyParser = require('body-parser');
@@ -56,6 +57,10 @@ const localConfigPath = '../smart-home-setup/arbeitszimmer/config/smart-home/con
 
 let config = null;
 
+const status = {};
+
+const longHistoryFile = path.join('/', 'storage', 'history.json');
+
 try {
   config = require(dockerConfigPath);
   logger.info(`Using config [${dockerConfigPath}]`);
@@ -77,9 +82,6 @@ app.use(express.static('dist'));
 
 app.use(morgan('dev'));
 
-const status = {};
-const statusHistory = {};
-
 const wss = new WebSocket.Server({port: wsPort});
 
 const clientsBroadcast = function(data) {
@@ -96,7 +98,6 @@ const clientConnected = client => {
       type: 'room',
       id,
       status: status[id],
-      statusHistory: statusHistory[id] || [],
     };
 
     client.send(JSON.stringify(data));
@@ -104,6 +105,15 @@ const clientConnected = client => {
 };
 
 (async function() {
+  const historyRecent = {};
+  let historyLong = {};
+
+  try {
+    historyLong = await fs.readJSON(longHistoryFile);
+  } catch(err) {
+    logger.trace('No long history', err);
+  }
+  
   const mqttClient = new MqttClient({
     url: config.mqttBroker,
     logger,
@@ -119,7 +129,6 @@ const clientConnected = client => {
       elementId,
       subArea,
     ] = topic.split('/');
-
     
     let changeDetected = false;
     
@@ -147,44 +156,72 @@ const clientConnected = client => {
         type: 'room',
         id: areaId,
         status: status[areaId],
-        statusHistory: statusHistory[areaId] || [],
       };
 
       clientsBroadcast(updated);
     }
   };
 
+  const getStatusPoint = areaId => {
+    const temperature = _.get(status, [areaId, 'temperature', 'value'], 0);
+    const humidity    = _.get(status, [areaId, 'humidity', 'value'], 0);
+    const fan    = _.get(status, [areaId, 'fans', 'lueftung', 'speed', 'value'], 'off');
+    const window = _.get(status, [areaId, 'windows', 'fenster', 'status', 'value'], 'closed');
+
+    return {
+      time: new Date().toISOString(),
+      temperature,
+      humidity,
+      fan,
+      window
+    };
+  }
+
+  // recent history
+  for(const areaId of ['bad', 'schlafzimmer', 'wohnzimmer']) {
+    historyRecent[areaId] = historyRecent[areaId] || [];
+    historyRecent[areaId].push(getStatusPoint(areaId));
+  }
+
   setInterval(() => {
-    // console.log(status);
-    for(const areaId of ['bad', 'schlafzimmer']) {
-      console.log(JSON.stringify(_.get(status, [areaId]), null, 2));
+    for(const areaId of ['bad', 'schlafzimmer', 'wohnzimmer']) {
+      historyRecent[areaId].push(getStatusPoint(areaId));
 
-      const temperature = _.get(status, [areaId, 'temperature', 'value'], 0);
-      const humidity    = _.get(status, [areaId, 'humidity', 'value'], 0);
-      const fan    = _.get(status, [areaId, 'fans', 'lueftung', 'speed', 'value'], 'off');
-      const window = _.get(status, [areaId, 'windows', 'fenster', 'status', 'value'], 'closed');
-
-      statusHistory[areaId] = statusHistory[areaId] || [];
-
-      statusHistory[areaId].push({
-        time: new Date().toISOString(),
-        temperature,
-        humidity,
-        fan,
-        window
-      });
-
-      // console.log('history', areaId, statusHistory[areaId]);
-
-      while(statusHistory[areaId].length > 60 * 24 * 2) {
-        statusHistory[areaId].shift();
+      while(historyRecent[areaId].length > 2 * 6 * 30) { // 6 hours as recent
+        historyRecent[areaId].shift();
       }
     }
-  }, 30 * 1000);
+  }, 30 * 1000); // all 30 seconds
+
+
+  setInterval(async () => {
+    for(const areaId of ['bad', 'schlafzimmer', 'wohnzimmer']) {
+      historyLong[areaId].push(getStatusPoint(areaId));
+
+      while(historyLong[areaId].length > 20 * 24 * 14) { // 2 weeks
+        historyLong[areaId].shift();
+      }
+    }
+  }, 3 * 60 * 1000); // all 3 minutes
+
+  setInterval(async () => {
+    try {
+      await fs.writeJSON(longHistoryFile, historyLong);
+    } catch {
+      // ignore
+    }
+  }, 60 * 60 * 1000); // all 60 minutes
+
+  const getHistoryData = areaId => {
+    return {
+      recent: historyRecent[areaId] || [],
+      long: historyLong[areaId] || [],
+    }
+  }
 
   await mqttClient.init(handleMqttMessage);
 
-  registerRoutes(app, {mqttClient, logger, config}, routes);
+  registerRoutes(app, {mqttClient, getHistoryData, logger, config}, routes);
 
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
